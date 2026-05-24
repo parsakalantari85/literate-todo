@@ -25,6 +25,18 @@ def add_task():
 
     revert_screen()
 
+def _print_tasks(tasks):
+    if not tasks:
+        print("No tasks found.")
+    else:
+        for task in tasks:
+            status = "✓ Completed" if task['completed'] else "• Pending"
+            created = f"   Created: {task['created_at']}\n" if task['created_at'] else ""
+
+            print(f"{task['id']}. {task['description']}")
+            print(f"   Status: {status}")
+            print(created, end="")
+
 def list_tasks():
     clear_screen()
 
@@ -34,14 +46,26 @@ def list_tasks():
     print("║                  TODO LIST                 ║")
     print("╚════════════════════════════════════════════╝\n")
 
-    if not tasks:
-        print("No tasks found.")
-    else:
-        for task in tasks:
-            status = "✓ Completed" if task['completed'] else "• Pending"
+    _print_tasks(tasks)
 
-            print(f"{task['id']}. {task['description']}")
-            print(f"   Status: {status}\n")
+    revert_screen()
+
+def search_tasks():
+    query = input("Search tasks: ")
+
+    clear_screen()
+
+    print("╔════════════════════════════════════════════╗")
+    print("║                SEARCH RESULTS              ║")
+    print("╚════════════════════════════════════════════╝\n")
+
+    results = manager.search_tasks(query)
+
+    if not results:
+        print(f'No tasks matching "{query}".')
+    else:
+        print(f'Found {len(results)} task(s) matching "{query}":\n')
+        _print_tasks(results)
 
     revert_screen()
 
@@ -82,15 +106,16 @@ def show_menu():
 
     print("1. Add task")
     print("2. List tasks")
-    print("3. Mark task as completed")
-    print("4. Delete task")
-    print("5. Exit")
+    print("3. Search tasks")
+    print("4. Mark task as completed")
+    print("5. Delete task")
+    print("6. Exit")
 
 def main():
     while True:
         show_menu()
 
-        choice = input("\nChoose (1-5): ")
+        choice = input("\nChoose (1-6): ")
 
         if choice == '1':
             add_task()
@@ -99,12 +124,15 @@ def main():
             list_tasks()
 
         elif choice == '3':
-            complete_task()
+            search_tasks()
 
         elif choice == '4':
-            delete_task()
+            complete_task()
 
         elif choice == '5':
+            delete_task()
+
+        elif choice == '6':
             clear_screen()
             print("Goodbye!")
             break
